@@ -7,7 +7,9 @@ target/
 dependency-reduced-pom.xml
 
 # IntelliJ IDEA
-.idea/
+.idea/**
+!.idea/runConfigurations/
+!.idea/runConfigurations/**
 *.iml
 *.iws
 *.ipr
