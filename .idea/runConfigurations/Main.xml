@@ -1,0 +1,20 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Main" type="Application" factoryName="Application" nameIsGenerated="true">
+    <option name="ALTERNATIVE_JRE_PATH" value="temurin-1.8 (WSL)" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <envs>
+      <env name="JAVA_HOME" value="/usr/lib/jvm/temurin-8-jdk-amd64" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="com.example.learn.Main" />
+    <module name="wslJavaLearn" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="com.example.learn.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="compile" />
+    </method>
+  </configuration>
+</component>
