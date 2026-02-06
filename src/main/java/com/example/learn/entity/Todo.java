@@ -1,9 +1,11 @@
 package com.example.learn.entity;
 
+import com.example.learn.converter.StringListConverter;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
 import java.time.*;
+import java.util.List;
 
 @Entity
 public class Todo {
@@ -19,6 +21,10 @@ public class Todo {
   @Column(name = "plannedFinishTime", columnDefinition = "DATETIME(6)")
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime plannedFinishTime;
+
+  @Column(name = "reminders")
+  @Convert(converter = StringListConverter.class)
+  private List<String> reminders;
 
   public Todo() {}
 
@@ -65,5 +71,13 @@ public class Todo {
 
   public void setPlannedFinishTime(LocalDateTime plannedFinishTime) {
     this.plannedFinishTime = plannedFinishTime;
+  }
+
+  public List<String> getReminders() {
+    return reminders;
+  }
+
+  public void setReminders(List<String> reminders) {
+    this.reminders = reminders;
   }
 }

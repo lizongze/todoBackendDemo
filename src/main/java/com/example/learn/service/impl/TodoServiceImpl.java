@@ -33,6 +33,7 @@ public class TodoServiceImpl implements TodoService {
     todo.setCompleted(todoDetails.isCompleted());
     todo.setDescription(todoDetails.getDescription());
     todo.setPlannedFinishTime(todoDetails.getPlannedFinishTime());
+    todo.setReminders(todoDetails.getReminders());
     return todoRepository.save(todo);
   }
 
