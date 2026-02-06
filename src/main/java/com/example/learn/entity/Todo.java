@@ -1,47 +1,69 @@
 package com.example.learn.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import javax.persistence.*;
+import java.time.*;
 
 @Entity
 public class Todo {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String title;
-    private boolean completed;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    public Todo() {
-    }
+  private String title;
+  private boolean completed;
+  private String description;
 
-    public Todo(String title, boolean completed) {
-        this.title = title;
-        this.completed = completed;
-    }
+  // 存储公司时区时间
+  @Column(name = "plannedFinishTime", columnDefinition = "DATETIME(6)")
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  private LocalDateTime plannedFinishTime;
 
-    public Long getId() {
-        return id;
-    }
+  public Todo() {}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public Todo(String title, boolean completed) {
+    this.title = title;
+    this.completed = completed;
+  }
 
-    public String getTitle() {
-        return title;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public boolean isCompleted() {
-        return completed;
-    }
+  public String getTitle() {
+    return title;
+  }
 
-    public void setCompleted(boolean completed) {
-        this.completed = completed;
-    }
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public boolean isCompleted() {
+    return completed;
+  }
+
+  public void setCompleted(boolean completed) {
+    this.completed = completed;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public LocalDateTime getPlannedFinishTime() {
+    return plannedFinishTime;
+  }
+
+  public void setPlannedFinishTime(LocalDateTime plannedFinishTime) {
+    this.plannedFinishTime = plannedFinishTime;
+  }
 }
