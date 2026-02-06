@@ -1,7 +1,8 @@
 package com.example.learn.controller;
 
+import com.example.learn.common.Result;
 import com.example.learn.entity.Todo;
-import com.example.learn.repository.TodoRepository;
+import com.example.learn.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,28 +14,26 @@ import java.util.List;
 public class TodoController {
 
     @Autowired
-    private TodoRepository todoRepository;
+    private TodoService todoService;
 
     @GetMapping
-    public List<Todo> getAllTodos() {
-        return todoRepository.findAll();
+    public Result<List<Todo>> getAllTodos() {
+        return Result.success(todoService.findAll());
     }
 
     @PostMapping
-    public Todo createTodo(@RequestBody Todo todo) {
-        return todoRepository.save(todo);
+    public Result<Todo> createTodo(@RequestBody Todo todo) {
+        return Result.success(todoService.create(todo));
     }
 
     @PutMapping("/{id}")
-    public Todo updateTodo(@PathVariable Long id, @RequestBody Todo todoDetails) {
-        Todo todo = todoRepository.findById(id).orElseThrow(() -> new RuntimeException("Todo not found"));
-        todo.setTitle(todoDetails.getTitle());
-        todo.setCompleted(todoDetails.isCompleted());
-        return todoRepository.save(todo);
+    public Result<Todo> updateTodo(@PathVariable Long id, @RequestBody Todo todoDetails) {
+        return Result.success(todoService.update(id, todoDetails));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTodo(@PathVariable Long id) {
-        todoRepository.deleteById(id);
+    public Result<Void> deleteTodo(@PathVariable Long id) {
+        todoService.delete(id);
+        return Result.success();
     }
 }
