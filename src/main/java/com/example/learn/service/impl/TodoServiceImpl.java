@@ -72,23 +72,37 @@ public class TodoServiceImpl implements TodoService {
         todoRepository
             .findById(id)
             .orElseThrow(() -> new RuntimeException("Todo not found with id: " + id));
-    todo.setTitle(todoDetails.getTitle());
-    todo.setCompleted(todoDetails.isCompleted());
-    todo.setDescription(todoDetails.getDescription());
-    todo.setPlannedFinishTime(todoDetails.getPlannedFinishTime());
-    todo.setReminders(todoDetails.getReminders());
     
-    // 1. 手动删除旧的关联 (避开 Hibernate orphanRemoval 在分片下的潜在问题)
-    relationRepository.deleteByTodoId(id);
+    if (todoDetails.getTitle() != null) {
+        todo.setTitle(todoDetails.getTitle());
+    }
+    if (todoDetails.getCompleted() != null) {
+        todo.setCompleted(todoDetails.getCompleted());
+    }
+    if (todoDetails.getDescription() != null) {
+        todo.setDescription(todoDetails.getDescription());
+    }
+    if (todoDetails.getPlannedFinishTime() != null) {
+        todo.setPlannedFinishTime(todoDetails.getPlannedFinishTime());
+    }
+    if (todoDetails.getReminders() != null) {
+        todo.setReminders(todoDetails.getReminders());
+    }
     
-    // 2. 强制刷新，确保删除 SQL 先执行
-    relationRepository.flush();
+    // 更新关联的标签 (仅当 todoMarkIds 不为 null 时才更新)
+    if (todoDetails.getTodoMarkIds() != null) {
+        // 1. 手动删除旧的关联 (避开 Hibernate orphanRemoval 在分片下的潜在问题)
+        relationRepository.deleteByTodoId(id);
+        
+        // 2. 强制刷新，确保删除 SQL 先执行
+        relationRepository.flush();
 
-    // 3. 此时再设置新标签，Todo 内部的 markRelations (Lazy) 加载时会是空的，从而避免 Hibernate 试图再次删除
-    todo.setTodoMarkIds(todoDetails.getTodoMarkIds());
-    
-    // 4. 同步 userId
-    todo.syncUserIdToRelations();
+        // 3. 此时再设置新标签
+        todo.setTodoMarkIds(todoDetails.getTodoMarkIds());
+        
+        // 4. 同步 userId
+        todo.syncUserIdToRelations();
+    }
     
     return todoRepository.save(todo);
   }

@@ -20,10 +20,11 @@ public class Todo {
   private Long id;
 
   private String title;
-  private boolean completed;
+  private Boolean completed;
   private String description;
 
   // 分库分表键 (Sharding Key)
+  @Column(updatable = false)
   private Long userId;
 
   // 存储公司时区时间
@@ -36,12 +37,15 @@ public class Todo {
   private List<String> reminders;
 
   @OneToMany(mappedBy = "todo", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-  private List<TodoMarkRelation> markRelations = new ArrayList<>();
+  private List<TodoMarkRelation> markRelations;
 
   // 虚拟 Setter：前端传 {"todoMarkIds": [1, 2]} 时，自动组装 Relation 对象
   @JsonProperty("todoMarkIds")
   public void setTodoMarkIds(List<Long> todoMarkIds) {
     if (todoMarkIds != null) {
+      if (this.markRelations == null) {
+        this.markRelations = new ArrayList<>();
+      }
       // 清空现有关系 (orphanRemoval = true 会自动删除数据库记录)
       this.markRelations.clear();
       
@@ -59,6 +63,9 @@ public class Todo {
   // 虚拟 Getter：从 Relation 中提取 Mark ID
   @JsonProperty("todoMarkIds")
   public List<Long> getTodoMarkIds() {
+    if (markRelations == null) {
+      return null;
+    }
     return markRelations.stream()
         .map(r -> r.getTodoMark().getId())
         .collect(Collectors.toList());
@@ -67,6 +74,9 @@ public class Todo {
   // 获取完整的标签对象列表 (方便前端展示)
   @JsonProperty("todoMarks")
   public List<TodoMark> getTodoMarks() {
+    if (markRelations == null) {
+      return null;
+    }
     return markRelations.stream()
         .map(TodoMarkRelation::getTodoMark)
         .collect(Collectors.toList());
@@ -115,11 +125,11 @@ public class Todo {
     this.title = title;
   }
 
-  public boolean isCompleted() {
+  public Boolean getCompleted() {
     return completed;
   }
 
-  public void setCompleted(boolean completed) {
+  public void setCompleted(Boolean completed) {
     this.completed = completed;
   }
 
