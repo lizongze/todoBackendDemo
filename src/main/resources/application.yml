@@ -1,11 +1,41 @@
 spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/todo_db?useSSL=false&serverTimezone=UTC
-    username: root
-    password: root
+  shardingsphere:
+    datasource:
+      names: ds0
+      ds0:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://localhost:3306/todo_db?useSSL=false&serverTimezone=UTC
+        username: root
+        password: root
+    rules:
+      sharding:
+        tables:
+          todo: # 逻辑表名
+            actual-data-nodes: ds0.todo_$->{0..1} # 映射到 todo_0, todo_1
+            table-strategy:
+              standard:
+                sharding-column: user_id
+                sharding-algorithm-name: todo-inline
+          todo_mark_relation: # 关联表的分片配置
+            actual-data-nodes: ds0.todo_mark_relation_$->{0..1}
+            table-strategy:
+              standard:
+                sharding-column: user_id # 必须也有 user_id
+                sharding-algorithm-name: todo-inline # 使用相同的算法
+        binding-tables: # 绑定表配置 (关键!)
+          - todo,todo_mark_relation
+        sharding-algorithms:
+          todo-inline:
+            type: CUSTOM_TODO
+    props:
+      sql-show: true
+
   jpa:
     hibernate:
-      ddl-auto: update
-      JDBC:
-        time_zone: UTC
-    show-sql: true
+      ddl-auto: none # 分库分表后必须关闭自动建表
+    show-sql: false # 使用 ShardingSphere 的日志看 SQL
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+

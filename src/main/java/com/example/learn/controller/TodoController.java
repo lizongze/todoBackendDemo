@@ -23,6 +23,10 @@ public class TodoController {
 
     @PostMapping
     public Result<Todo> createTodo(@RequestBody Todo todo) {
+        // 临时硬编码 userId，模拟已登录用户
+        if (todo.getUserId() == null) {
+            todo.setUserId(1L);
+        }
         return Result.success(todoService.create(todo));
     }
 
